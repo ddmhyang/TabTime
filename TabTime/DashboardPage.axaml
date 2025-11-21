@@ -1,5 +1,145 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="TabTime.DashboardPage">
-    <TextBlock Text="��ú��� ȭ���Դϴ�" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
-</UserControl>
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:TabTime"
+             mc:Ignorable="d" d:DesignWidth="682" d:DesignHeight="526"
+             x:Class="TabTime.DashboardPage"
+             FontFamily="Pretendard, Segoe UI, Apple SD Gothic Neo">
+
+    <UserControl.Styles>
+        <Style Selector="Button.RoundedButtonStyle">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="Transparent">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Content="{TemplateBinding Content}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      CornerRadius="{TemplateBinding CornerRadius}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      Content="{TemplateBinding Content}"
+                                      Padding="{TemplateBinding Padding}"/>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="Black"/>
+        </Style>
+        <Style Selector="ListBoxItem:selected TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+    </UserControl.Styles>
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="PrimaryTextBrush">#333333</SolidColorBrush>
+        <SolidColorBrush x:Key="SecondaryTextBrush">#7D7D7D</SolidColorBrush>
+        <SolidColorBrush x:Key="AccentColorBrush">#2195F2</SolidColorBrush>
+        <SolidColorBrush x:Key="BorderBrush">#E0E0E0</SolidColorBrush>
+        <SolidColorBrush x:Key="InputBackgroundBrush">#F9F9F9</SolidColorBrush>
+    </UserControl.Resources>
+
+    <Viewbox Stretch="Uniform">
+        <Canvas x:Name="dashboard" Width="682" Height="526" Background="White">
+            
+            <Button Canvas.Left="19" Canvas.Top="40" Width="24" Height="24" Tag="Settings" Click="NavButton_Click" Background="Transparent">
+                <TextBlock Text="⚙️" FontSize="16"/>
+            </Button>
+
+            <TextBlock x:Name="CurrentTaskDisplay" Width="250" Canvas.Left="80" Canvas.Top="68" 
+                       Text="{Binding CurrentTaskDisplayText}" TextAlignment="Center" 
+                       Foreground="{StaticResource PrimaryTextBrush}" FontSize="16" FontWeight="SemiBold"/>
+            
+            <TextBlock x:Name="MainTimeDisplay" Canvas.Left="94" Canvas.Top="88" Width="220" 
+                       TextAlignment="Center" FontSize="44" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}"
+                       Text="{Binding ElementName=TaskListBox, Path=SelectedItem.TotalTimeFormatted, FallbackValue='00:00:00'}"/>
+            
+            <TextBlock x:Name="SelectedTaskTotalTimeDisplay" Width="220" Canvas.Left="95" Canvas.Top="142" 
+                       Text="{Binding TotalTimeTodayDisplayText}" TextAlignment="Center" 
+                       Foreground="{StaticResource PrimaryTextBrush}" FontSize="12" FontWeight="Medium"/>
+
+            <Border Canvas.Left="19" Canvas.Top="173" Width="388" Height="331" BorderBrush="#f0f0f0" BorderThickness="2" CornerRadius="10">
+                <Canvas Margin="0,0,0,-3">
+
+                    <Grid Canvas.Left="135" Canvas.Top="11" Width="120" Height="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="&lt;" Click="PrevDayButton_Click" Background="Transparent" Margin="-20,-1,10,0"/>
+                        <TextBlock x:Name="CurrentDateDisplay" Text="2025-11-22" VerticalAlignment="Center" FontSize="10" 
+                                   Background="#F0F0F0" Padding="18,3" FontWeight="SemiBold" Grid.ColumnSpan="2"/>
+                        <TextBlock x:Name="CurrentDayDisplay" Text="토" FontSize="10" FontWeight="Bold" Grid.Column="1" 
+                                   Margin="95,4,2,4" Foreground="{StaticResource PrimaryTextBrush}"/>
+                        <Button Grid.Column="2" Content="&gt;" Click="NextDayButton_Click" Background="Transparent" Margin="0,-1,-2,0"/>
+                    </Grid>
+
+                    <Button Canvas.Left="288" Canvas.Top="10" Content="+ 기록 직접 추가" Click="AddManualLogButton_Click" 
+                            Classes="RoundedButtonStyle" Background="{StaticResource AccentColorBrush}" Foreground="White" Height="20" Width="78" FontSize="10"/>
+
+                    <ScrollViewer Canvas.Left="0" Canvas.Top="38" Width="262" Height="264" 
+                                  VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+                        <Grid>
+                            <StackPanel x:Name="TimeTableContainer" />
+                            <Canvas x:Name="SelectionCanvas" Background="Transparent" 
+                                    PointerPressed="SelectionCanvas_PointerPressed"
+                                    PointerMoved="SelectionCanvas_PointerMoved"
+                                    PointerReleased="SelectionCanvas_PointerReleased" />
+                        </Grid>
+                    </ScrollViewer>
+
+                    <StackPanel Canvas.Left="272" Canvas.Top="215" Width="95" Spacing="2">
+                        <Border CornerRadius="2" Background="#FF345080" Height="21">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🌊" VerticalAlignment="Center" Margin="5,0"/>
+                                <Slider x:Name="waveSlider" Width="56" Minimum="0" Maximum="1"/>
+                            </StackPanel>
+                        </Border>
+                        <Border CornerRadius="2" Background="#FF5DB15D" Height="21">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🌲" VerticalAlignment="Center" Margin="5,0"/>
+                                <Slider x:Name="forestSlider" Width="56" Minimum="0" Maximum="1"/>
+                            </StackPanel>
+                        </Border>
+                        <Border CornerRadius="2" Background="#FFD9D9D9" Height="21">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🌧️" VerticalAlignment="Center" Margin="5,0"/>
+                                <Slider x:Name="rainSlider" Width="56" Minimum="0" Maximum="1"/>
+                            </StackPanel>
+                        </Border>
+                        <Border CornerRadius="2" Background="#FFF27821" Height="21">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🔥" VerticalAlignment="Center" Margin="5,0"/>
+                                <Slider x:Name="campfireSlider" Width="56" Minimum="0" Maximum="1"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Canvas>
+            </Border>
+
+            <Border Canvas.Left="417" Canvas.Top="40" Width="247" Height="130" 
+                    BorderBrush="{StaticResource AccentColorBrush}" BorderThickness="2" CornerRadius="10">
+                <Grid>
+                    <Image x:Name="UserProfileImage" Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,5" Stretch="Uniform"/>
+                    
+                    <Button Content="이미지 변경" Click="ChangeImageButton_Click" 
+                            Classes="RoundedButtonStyle" FontSize="9" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="15,0,0,15"/>
+                </Grid>
+            </Border>
+
+            <Border Canvas.Left="417" Canvas.Top="173" Width="247" Height="145"
