@@ -1,0 +1,47 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TabTime"
+        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="300"
+        x:Class="TabTime.AddLogWindow"
+        Title="기록 추가/수정" Width="350" Height="320"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <StackPanel Margin="20" Spacing="15">
+        <StackPanel Spacing="5">
+            <TextBlock Text="과목 선택" FontWeight="SemiBold"/>
+            <ComboBox Name="TaskComboBox" HorizontalAlignment="Stretch">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Text}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+
+        <StackPanel Spacing="5">
+            <TextBlock Text="시작 시간" FontWeight="SemiBold"/>
+            <Grid ColumnDefinitions="*, 10, *">
+                <DatePicker Name="StartDatePicker" Grid.Column="0"/>
+                <TimePicker Name="StartTimePicker" Grid.Column="2"/>
+            </Grid>
+        </StackPanel>
+
+        <StackPanel Spacing="5">
+            <TextBlock Text="종료 시간" FontWeight="SemiBold"/>
+            <Grid ColumnDefinitions="*, 10, *">
+                <DatePicker Name="EndDatePicker" Grid.Column="0"/>
+                <TimePicker Name="EndTimePicker" Grid.Column="2"/>
+            </Grid>
+        </StackPanel>
+
+        <Grid ColumnDefinitions="Auto, *, Auto, 10, Auto" Margin="0,20,0,0">
+            <Button Name="DeleteButton" Content="삭제" Background="#FFC1C1" Click="DeleteButton_Click"/>
+            
+            <Button Grid.Column="2" Content="확인" Background="{StaticResource AccentColorBrush}" Foreground="White" Click="OkButton_Click"/>
+            <Button Grid.Column="4" Content="취소" Click="CancelButton_Click"/>
+        </Grid>
+    </StackPanel>
+</Window>

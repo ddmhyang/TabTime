@@ -250,8 +250,48 @@ namespace TabTime
                 _selectionBox.IsVisible = false;
                 e.Pointer.Capture(null);
 
-                // 여기서 드래그된 영역 안의 로그들을 찾는 로직 실행
-                // (WPF의 IntersectsWith 로직과 동일하게 구현 가능)
+                var selectionRect = new Rect(Canvas.GetLeft(_selectionBox), Canvas.GetTop(_selectionBox), _selectionBox.Width, _selectionBox.Height);
+
+                // 너무 작으면 무시
+                if (selectionRect.Width < 10 && selectionRect.Height < 10) return;
+
+                var selectedLogs = new List<TimeLogEntry>();
+                foreach (var child in SelectionCanvas.Children.OfType<Border>())
+                {
+                    if (child.Tag is TimeLogEntry logEntry)
+                    {
+                        var logRect = new Rect(Canvas.GetLeft(child), Canvas.GetTop(child), child.Bounds.Width, child.Bounds.Height);
+                        if (selectionRect.Intersects(logRect))
+                        {
+                            selectedLogs.Add(logEntry);
+                        }
+                    }
+                }
+
+                if (selectedLogs.Any() && DataContext is DashboardViewModel vm)
+                {
+                    var distinctLogs = selectedLogs.Distinct().ToList();
+
+                    // 일괄 수정 창 띄우기
+                    var bulkWin = new BulkEditLogsWindow(distinctLogs, vm.TaskItems);
+                    var result = await bulkWin.ShowDialog<bool>((Window)VisualRoot);
+
+                    if (result)
+                    {
+                        if (bulkWin.Result == BulkEditResult.Delete)
+                        {
+                            foreach (var log in distinctLogs) vm.TimeLogEntries.Remove(log);
+                        }
+                        else if (bulkWin.Result == BulkEditResult.ChangeTask && bulkWin.SelectedTask != null)
+                        {
+                            foreach (var log in distinctLogs) log.TaskText = bulkWin.SelectedTask.Text;
+                        }
+
+                        await new TimeLogService().SaveTimeLogsAsync(vm.TimeLogEntries);
+                        RecalculateAllTotals();
+                        RenderTimeTable();
+                    }
+                }
             }
         }
 
@@ -276,18 +316,52 @@ namespace TabTime
         // --- 할일(Todo) 및 기타 ---
         private void AddTodoButton_Click(object sender, RoutedEventArgs e) { /* 구현 필요 */ }
         private void TodoInput_KeyDown(object sender, KeyEventArgs e) { /* 구현 필요 */ }
-        private void AddManualLogButton_Click(object sender, RoutedEventArgs e) { /* 구현 필요 */ }
-        private void ChangeImageButton_Click(object sender, RoutedEventArgs e) { /* 구현 필요 */ }
-        public void Shutdown()
+        private async void AddManualLogButton_Click(object sender, RoutedEventArgs e)
         {
-            // 마지막 세션 저장 로직
-            if ((_stopwatch.IsRunning || _isInGracePeriod) && _currentWorkingTask != null)
-            {
-                LogWorkSession();
-            }
+            if (DataContext is not DashboardViewModel vm) return;
 
-            // 설정 저장
-            _settingsService?.SaveSettings(_settings);
+            // 기본값 설정 (현재 시간부터 1시간)
+            var now = DateTime.Now;
+            var templateLog = new TimeLogEntry
+            {
+                StartTime = now,
+                EndTime = now.AddHours(1),
+                TaskText = vm.TaskItems.FirstOrDefault()?.Text ?? "과목 없음"
+            };
+
+            // 창 띄우기
+            var win = new AddLogWindow(vm.TaskItems, templateLog);
+            var result = await win.ShowDialog<bool>((Window)VisualRoot);
+
+            if (result)
+            {
+                if (win.IsDeleted) return; // 삭제 버튼 눌렀으면 무시
+
+                if (win.NewLogEntry != null)
+                {
+                    // 뷰모델에 추가 요청
+                    vm.TimeLogEntries.Add(win.NewLogEntry);
+                    await new TimeLogService().SaveTimeLogsAsync(vm.TimeLogEntries);
+
+                    // 화면 갱신
+                    RecalculateAllTotals();
+                    RenderTimeTable();
+                }
+            }
         }
+        private void ChangeImageButton_Click(object sender, RoutedEventArgs e) { /* 구현 필요 */ }
+
+        private async void PinnedMemo_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
+        {
+            var memoWindow = new MemoWindow();
+
+            // 창을 띄우고 닫힐 때까지 기다립니다 (await)
+            await memoWindow.ShowDialog((Window)VisualRoot);
+
+            // 창이 닫히면 대시보드의 메모 데이터를 새로고침합니다.
+            // (LoadMemosAsync 같은 메서드가 있다면 호출)
+            // await LoadMemosAsync(); 
+        }
+
     }
 }

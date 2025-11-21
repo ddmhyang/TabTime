@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="150"
+        x:Class="TabTime.InputWindow"
+        Title="입력"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Width="300">
+    
+    <StackPanel Margin="15">
+        <TextBlock Name="PromptText" Text="값을 입력하세요:"/>
+        <TextBox Name="InputTextBox" Margin="0,5,0,15" KeyDown="InputTextBox_KeyDown"/>
+        
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button Content="확인" Width="75" IsDefault="True" Click="OkButton_Click"/>
+            <Button Content="취소" Width="75" IsCancel="True" Click="CancelButton_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

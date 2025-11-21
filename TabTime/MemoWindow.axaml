@@ -1,0 +1,42 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TabTime"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+        x:Class="TabTime.MemoWindow"
+        Title="메모장" Height="500" Width="700"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid Margin="10" ColumnDefinitions="200, *">
+        
+        <Border Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="3" Padding="5">
+            <DockPanel>
+                <Button DockPanel.Dock="Bottom" Content="새 메모" Click="NewMemoButton_Click" 
+                        HorizontalAlignment="Stretch" Margin="0,10,0,0"/>
+                
+                <ListBox Name="MemoListBox" ItemsSource="{Binding AllMemos}" SelectionChanged="MemoListBox_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="local:MemoItem">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock Text="📌" IsVisible="{Binding IsPinned}"/>
+                                <TextBlock Text="{Binding Title}" ToolTip.Tip="{Binding Content}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="10,0,0,0" Name="EditorPanel" IsEnabled="False" RowDefinitions="*, Auto">
+            
+            <TextBox Grid.Row="0" Name="MemoContentTextBox" AcceptsReturn="True" TextWrapping="Wrap" 
+                     TextChanged="MemoContentTextBox_TextChanged" VerticalContentAlignment="Top"/>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,10,0,0">
+                <CheckBox Name="PinCheckBox" Content="대시보드에 고정" Click="PinCheckBox_Click"/>
+                <Button Content="삭제" Click="DeleteMemoButton_Click" Background="#FFC1C1"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

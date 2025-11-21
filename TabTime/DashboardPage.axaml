@@ -5,6 +5,7 @@
              xmlns:local="clr-namespace:TabTime"
              mc:Ignorable="d" d:DesignWidth="682" d:DesignHeight="526"
              x:Class="TabTime.DashboardPage"
+             x:DataType="local:DashboardViewModel"
              FontFamily="Pretendard, Segoe UI, Apple SD Gothic Neo">
 
     <UserControl.Styles>
@@ -66,7 +67,7 @@
             
             <TextBlock x:Name="MainTimeDisplay" Canvas.Left="94" Canvas.Top="88" Width="220" 
                        TextAlignment="Center" FontSize="44" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}"
-                       Text="{Binding ElementName=TaskListBox, Path=SelectedItem.TotalTimeFormatted, FallbackValue='00:00:00'}"/>
+                       Text="{Binding MainTimeDisplayText, FallbackValue='00:00:00'}"/>
             
             <TextBlock x:Name="SelectedTaskTotalTimeDisplay" Width="220" Canvas.Left="95" Canvas.Top="142" 
                        Text="{Binding TotalTimeTodayDisplayText}" TextAlignment="Center" 
@@ -156,7 +157,7 @@
                     <ListBox x:Name="TaskListBox" ItemsSource="{Binding TaskItems}" SelectedItem="{Binding SelectedTaskItem, Mode=TwoWay}" 
                              Background="Transparent" Margin="0, 5, 0, 5">
                         <ListBox.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate DataType="local:TaskItem">
                                 <Border x:Name="TaskItemBorder" CornerRadius="8" BorderThickness="1" Margin="5,3" Padding="5">
                                     <Grid ColumnDefinitions="13, 110, *">
                                         <Border Grid.Column="0" Width="10" Height="10" CornerRadius="5" Background="{Binding ColorBrush}" 
@@ -189,7 +190,7 @@
 
                     <ListBox x:Name="TodoListBox" ItemsSource="{Binding TaskItems}" Background="Transparent" Margin="0, 5, 0, 5">
                         <ListBox.ItemTemplate>
-                             <DataTemplate>
+                             <DataTemplate DataType="local:TaskItem">
                                 <TextBlock Text="{Binding Text}"/>
                              </DataTemplate>
                         </ListBox.ItemTemplate>
