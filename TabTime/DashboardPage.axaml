@@ -74,7 +74,6 @@
 
             <Border Canvas.Left="19" Canvas.Top="173" Width="388" Height="331" BorderBrush="#f0f0f0" BorderThickness="2" CornerRadius="10">
                 <Canvas Margin="0,0,0,-3">
-
                     <Grid Canvas.Left="135" Canvas.Top="11" Width="120" Height="20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -136,10 +135,68 @@
                     BorderBrush="{StaticResource AccentColorBrush}" BorderThickness="2" CornerRadius="10">
                 <Grid>
                     <Image x:Name="UserProfileImage" Width="120" Height="120" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,5" Stretch="Uniform"/>
-                    
                     <Button Content="이미지 변경" Click="ChangeImageButton_Click" 
                             Classes="RoundedButtonStyle" FontSize="9" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="15,0,0,15"/>
                 </Grid>
             </Border>
 
-            <Border Canvas.Left="417" Canvas.Top="173" Width="247" Height="145"
+            <Border Canvas.Left="417" Canvas.Top="173" Width="247" Height="145" 
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Background="{StaticResource InputBackgroundBrush}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="과목" Margin="16,8,0,0" FontSize="10" Foreground="{StaticResource PrimaryTextBrush}"/>
+                    
+                    <StackPanel DockPanel.Dock="Bottom" Margin="10, 5, 10, 10" Orientation="Horizontal">
+                        <Border CornerRadius="10" Background="{StaticResource BorderBrush}" Width="180">
+                            <TextBox x:Name="TaskInput" KeyDown="TaskInput_KeyDown" Background="Transparent" BorderThickness="0" Margin="5"/>
+                        </Border>
+                        <Button Content="추가" Click="AddTaskButton_Click" Width="40" 
+                                Classes="RoundedButtonStyle" Margin="5,0,0,0" Background="White"/>
+                    </StackPanel>
+
+                    <ListBox x:Name="TaskListBox" ItemsSource="{Binding TaskItems}" SelectedItem="{Binding SelectedTaskItem, Mode=TwoWay}" 
+                             Background="Transparent" Margin="0, 5, 0, 5">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border x:Name="TaskItemBorder" CornerRadius="8" BorderThickness="1" Margin="5,3" Padding="5">
+                                    <Grid ColumnDefinitions="13, 110, *">
+                                        <Border Grid.Column="0" Width="10" Height="10" CornerRadius="5" Background="{Binding ColorBrush}" 
+                                                Cursor="Hand" Tag="{Binding}" PointerPressed="ChangeTaskColor_PointerPressed"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Text}" VerticalAlignment="Center" Margin="5,0"/>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding TotalTimeFormatted}" VerticalAlignment="Center" FontSize="10" Margin="0,0,10,0"/>
+                                            <Button Content="×" FontSize="10" Background="Transparent" Click="DeleteTaskButton_Click"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+            <Border Canvas.Left="417" Canvas.Top="327" Width="247" Height="177" 
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="오늘의 할일" Margin="16,8,0,0" FontSize="10" Foreground="{StaticResource PrimaryTextBrush}"/>
+                    
+                    <StackPanel DockPanel.Dock="Bottom" Margin="10, 5, 10, 10" Orientation="Horizontal">
+                        <Border CornerRadius="10" Background="{StaticResource BorderBrush}" Width="180">
+                            <TextBox x:Name="TodoInput" KeyDown="TodoInput_KeyDown" Background="Transparent" BorderThickness="0" Margin="5"/>
+                        </Border>
+                        <Button Content="추가" Click="AddTodoButton_Click" Width="40" 
+                                Classes="RoundedButtonStyle" Margin="5,0,0,0" Background="#7D7D7D" Foreground="White"/>
+                    </StackPanel>
+
+                    <ListBox x:Name="TodoListBox" ItemsSource="{Binding TaskItems}" Background="Transparent" Margin="0, 5, 0, 5">
+                        <ListBox.ItemTemplate>
+                             <DataTemplate>
+                                <TextBlock Text="{Binding Text}"/>
+                             </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
+
+        </Canvas>
+    </Viewbox>
+</UserControl>

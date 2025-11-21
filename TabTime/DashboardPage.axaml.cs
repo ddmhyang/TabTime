@@ -12,7 +12,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using TabTime.ViewModels;
 
 namespace TabTime
 {
@@ -279,5 +278,16 @@ namespace TabTime
         private void TodoInput_KeyDown(object sender, KeyEventArgs e) { /* 구현 필요 */ }
         private void AddManualLogButton_Click(object sender, RoutedEventArgs e) { /* 구현 필요 */ }
         private void ChangeImageButton_Click(object sender, RoutedEventArgs e) { /* 구현 필요 */ }
+        public void Shutdown()
+        {
+            // 마지막 세션 저장 로직
+            if ((_stopwatch.IsRunning || _isInGracePeriod) && _currentWorkingTask != null)
+            {
+                LogWorkSession();
+            }
+
+            // 설정 저장
+            _settingsService?.SaveSettings(_settings);
+        }
     }
 }
