@@ -1,9 +1,71 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="TabTime.MainWindow"
-        Title="TabTime">
-    Welcome to Avalonia!
+        Icon="/Assets/avalonia-logo.ico"
+        Title="TabTime"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        SystemDecorations="None"
+        WindowStartupLocation="CenterScreen">
+
+    <Border Background="#1E1E1E" CornerRadius="10" ClipToBounds="True">
+        <Grid RowDefinitions="Auto,*">
+
+            <Grid Grid.Row="0" Height="30" Background="#252526" PointerPressed="TitleBar_PointerPressed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="TabTime" VerticalAlignment="Center" Margin="10,0" 
+                           Foreground="#CCCCCC" FontWeight="SemiBold" IsHitTestVisible="False"/>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Name="MinimizeButton" Content="_" Width="40" Height="30"
+                            Background="Transparent" Foreground="White" BorderThickness="0"
+                            Click="MinimizeButton_Click"/>
+                    <Button Name="CloseButton" Content="X" Width="40" Height="30"
+                            Background="Transparent" Foreground="White" BorderThickness="0"
+                            Click="CloseButton_Click">
+                        <Button.Styles>
+                            <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                <Setter Property="Background" Value="#C42B1C"/>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
+                
+                <Border Grid.Column="0" Width="200" Background="#2D2D30">
+                    <StackPanel Margin="0,20,0,0">
+                        <Button Tag="Dashboard" Click="NavButton_Click" 
+                                Background="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" Margin="5">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock Text="📊" VerticalAlignment="Center"/>
+                                <TextBlock Text="대시보드" VerticalAlignment="Center" Foreground="White"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Tag="Settings" Click="NavButton_Click"
+                                Background="Transparent" BorderThickness="0" HorizontalAlignment="Stretch" Margin="5">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <TextBlock Text="⚙️" VerticalAlignment="Center"/>
+                                <TextBlock Text="설정" VerticalAlignment="Center" Foreground="White"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Background="#1E1E1E">
+                    <TransitioningContentControl Name="MainFrame" Margin="20"/>
+                </Border>
+            </Grid>
+
+        </Grid>
+    </Border>
 </Window>

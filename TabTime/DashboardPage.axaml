@@ -1,0 +1,5 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TabTime.DashboardPage">
+    <TextBlock Text="대시보드 화면입니다" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
+</UserControl>
